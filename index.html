@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>GPA Calculator - Dr. Mohamed Fathy</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; direction: rtl; padding: 30px; background: #f9f9f9; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    input { width: 100%; padding: 8px; font-size: 14px; text-align: center; }
+    button { padding: 10px 20px; font-weight: bold; margin-top: 10px; background-color: #4CAF50; border: none; color: white; border-radius: 6px; cursor: pointer; }
+    .section { background: #fff; padding: 20px; border-radius: 10px; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .result { margin-top: 15px; font-size: 1.1em; color: #1e6f36; font-weight: bold; }
+    .footer { margin-top: 40px; font-size: 0.9em; color: #555; text-align: center; border-top: 1px solid #ccc; padding-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h2>📚 حساب GPA الترم الثاني</h2>
+
+  <table id="table">
+    <tr>
+      <th>المادة</th>
+      <th>الدرجة (من 4)</th>
+      <th>عدد الساعات</th>
+    </tr>
+    <tr>
+      <td><input type="text" placeholder="مثال: تشريح"></td>
+      <td><input type="number" class="grade" step="0.01" min="0" max="4"></td>
+      <td><input type="number" class="hours" step="0.5" min="0"></td>
+    </tr>
+  </table>
+
+  <button onclick="addRow()">➕ أضف مادة</button>
+  <button onclick="calculateTermGPA()">📊 احسب GPA الترم الثاني</button>
+
+  <div class="result" id="termGPAResult"></div>
+
+  <div class="section">
+    <h3>📈 حساب المعدل التراكمي</h3>
+
+    <label>GPA الترم الأول:</label>
+    <input type="number" id="gpa1" placeholder="مثال: 3.2" step="0.01" min="0" max="4">
+
+    <label>عدد الساعات الترم الأول:</label>
+    <input type="number" id="hours1" placeholder="مثال: 15" step="0.5" min="0">
+
+    <label>GPA الترم الثاني (يظهر تلقائي):</label>
+    <input type="number" id="gpa2" placeholder="مثال: 3.5" step="0.01" min="0" max="4" readonly>
+
+    <label>عدد الساعات الترم الثاني:</label>
+    <input type="number" id="hours2" placeholder="مثال: 18" step="0.5" min="0">
+
+    <button onclick="calculateTotalGPA()">📌 احسب المعدل التراكمي النهائي</button>
+
+    <div class="result" id="finalResult"></div>
+  </div>
+
+  <div class="footer">
+    Created by Dr. Mohamed Fathy – 📞 01091964996
+  </div>
+
+  <script>
+    function addRow() {
+      const table = document.getElementById("table");
+      const row = table.insertRow();
+      for (let i = 0; i < 3; i++) {
+        const cell = row.insertCell();
+        const input = document.createElement("input");
+        input.type = i === 0 ? "text" : "number";
+        input.step = i === 0 ? "" : "0.01";
+        input.className = i === 1 ? "grade" : i === 2 ? "hours" : "";
+        input.min = "0";
+        input.max = i === 1 ? "4" : "";
+        cell.appendChild(input);
+      }
+    }
+
+    function calculateTermGPA() {
+      const grades = document.querySelectorAll(".grade");
+      const hours = document.querySelectorAll(".hours");
+
+      let totalPoints = 0;
+      let totalHours = 0;
+
+      for (let i = 0; i < grades.length; i++) {
+        const grade = parseFloat(grades[i].value);
+        const hour = parseFloat(hours[i].value);
+
+        if (!isNaN(grade) && !isNaN(hour)) {
+          totalPoints += grade * hour;
+          totalHours += hour;
+        }
+      }
+
+      if (totalHours === 0) {
+        document.getElementById("termGPAResult").innerText = "❌ أدخل بيانات صحيحة لحساب GPA الترم.";
+        return;
+      }
+
+      const termGPA = totalPoints / totalHours;
+      document.getElementById("termGPAResult").innerText = `✅ GPA الترم الثاني: ${termGPA.toFixed(2)}`;
+      document.getElementById("gpa2").value = termGPA.toFixed(2);
+    }
+
+    function calculateTotalGPA() {
+      const gpa1 = parseFloat(document.getElementById("gpa1").value) || 0;
+      const hours1 = parseFloat(document.getElementById("hours1").value) || 0;
+      const gpa2 = parseFloat(document.getElementById("gpa2").value) || 0;
+      const hours2 = parseFloat(document.getElementById("hours2").value) || 0;
+
+      if ((hours1 + hours2) === 0) {
+        document.getElementById("finalResult").innerText = "❌ أدخل البيانات بشكل صحيح.";
+        return;
+      }
+
+      const totalPoints = (gpa1 * hours1) + (gpa2 * hours2);
+      const totalHours = hours1 + hours2;
+      const totalGPA = totalPoints / totalHours;
+
+      document.getElementById("finalResult").innerText = `📍 المعدل التراكمي النهائي: ${totalGPA.toFixed(2)}`;
+    }
+  </script>
+
+</body>
+</html>
