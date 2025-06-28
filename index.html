@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>حساب GPA</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -11,7 +12,7 @@
       padding: 20px;
       background-color: #f0f0f0;
       color: #333;
-      transition: background-color 0.3s, color 0.3s;
+      transition: background-color 0.5s, color 0.5s;
     }
     .dark-mode {
       background-color: #121212;
@@ -24,6 +25,7 @@
       border-radius: 10px;
       background-color: #fff;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: background-color 0.5s;
     }
     .dark-mode .container {
       background-color: #1e1e1e;
@@ -47,6 +49,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
     button:hover {
       background-color: #0056b3;
@@ -66,6 +69,34 @@
     .course-item input {
       flex: 1;
     }
+    .social-icons-box {
+      border: 2px solid #ccc;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 30px auto 40px auto;
+      width: fit-content;
+      background-color: #f9f9f9;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .dark-mode .social-icons-box {
+      background-color: #2a2a2a;
+      border-color: #555;
+    }
+    .social-icons-box a {
+      display: inline-block;
+      margin: 0 8px;
+      font-size: 28px;
+      color: #555;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .dark-mode .social-icons-box a {
+      color: #bbb;
+    }
+    .social-icons-box a:hover {
+      transform: scale(1.3);
+      color: #00c853;
+    }
   </style>
 </head>
 <body>
@@ -74,9 +105,9 @@
 
     <div id="courseContainer" class="course-list">
       <div class="course-item">
-        <input type="text" placeholder="اسم المادة" class="subject">
-        <input type="number" step="0.01" placeholder="الدرجة من 4" class="grade">
-        <input type="number" step="0.01" placeholder="عدد الساعات" class="hours">
+        <input type="text" placeholder="اسم المادة" class="subject" />
+        <input type="number" step="0.01" placeholder="الدرجة من 4" class="grade" />
+        <input type="number" step="0.01" placeholder="عدد الساعات" class="hours" />
       </div>
     </div>
 
@@ -84,13 +115,20 @@
     <button onclick="calculateGPA()">احسب GPA</button>
     <p id="termGPA"></p>
 
-    <hr>
+    <hr />
+
+    <div class="social-icons-box">
+      <a href="https://wa.me/201091964996" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      <a href="https://www.instagram.com/m_2__0_0_5/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.facebook.com/reel/937461278069892" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="https://t.me/d_mogamed_fathy" target="_blank" title="Telegram"><i class="fab fa-telegram"></i></a>
+    </div>
 
     <h4>GPA التراكمي (ترمين)</h4>
-    <input type="number" id="gpa1" placeholder="GPA الترم الأول" step="0.01">
-    <input type="number" id="hours1" placeholder="عدد ساعات الترم الأول" step="0.01">
-    <input type="number" id="gpa2" placeholder="GPA الترم الثاني" step="0.01">
-    <input type="number" id="hours2" placeholder="عدد ساعات الترم الثاني" step="0.01">
+    <input type="number" id="gpa1" placeholder="GPA الترم الأول" step="0.01" />
+    <input type="number" id="hours1" placeholder="عدد ساعات الترم الأول" step="0.01" />
+    <input type="number" id="gpa2" placeholder="GPA الترم الثاني" step="0.01" />
+    <input type="number" id="hours2" placeholder="عدد ساعات الترم الثاني" step="0.01" />
     <button onclick="calcCumulativeGPA()">احسب التراكمي</button>
     <p id="cumulativeGPA"></p>
 
@@ -105,9 +143,9 @@
       const div = document.createElement('div');
       div.className = 'course-item';
       div.innerHTML = `
-        <input type="text" placeholder="اسم المادة" class="subject">
-        <input type="number" step="0.01" placeholder="الدرجة من 4" class="grade">
-        <input type="number" step="0.01" placeholder="عدد الساعات" class="hours">
+        <input type="text" placeholder="اسم المادة" class="subject" />
+        <input type="number" step="0.01" placeholder="الدرجة من 4" class="grade" />
+        <input type="number" step="0.01" placeholder="عدد الساعات" class="hours" />
       `;
       container.appendChild(div);
     }
@@ -138,15 +176,15 @@
     }
 
     function calcCumulativeGPA() {
-      let gpa1 = parseFloat(document.getElementById('gpa1').value);
-      let hours1 = parseFloat(document.getElementById('hours1').value);
-      let gpa2 = parseFloat(document.getElementById('gpa2').value);
-      let hours2 = parseFloat(document.getElementById('hours2').value);
+      const gpa1 = parseFloat(document.getElementById('gpa1').value);
+      const hours1 = parseFloat(document.getElementById('hours1').value);
+      const gpa2 = parseFloat(document.getElementById('gpa2').value);
+      const hours2 = parseFloat(document.getElementById('hours2').value);
 
       if (!isNaN(gpa1) && !isNaN(hours1) && !isNaN(gpa2) && !isNaN(hours2)) {
-        let totalPoints = (gpa1 * hours1) + (gpa2 * hours2);
-        let totalHours = hours1 + hours2;
-        let cumulative = totalPoints / totalHours;
+        const totalPoints = (gpa1 * hours1) + (gpa2 * hours2);
+        const totalHours = hours1 + hours2;
+        const cumulative = totalPoints / totalHours;
         document.getElementById('cumulativeGPA').innerText = 'GPA التراكمي = ' + cumulative.toFixed(2);
       } else {
         document.getElementById('cumulativeGPA').innerText = 'يرجى إدخال جميع القيم بشكل صحيح';
