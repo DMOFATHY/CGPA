@@ -1,96 +1,87 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>حساب المعدل التراكمي - GPA</title>
+  <title>الموقع تحت الصيانة</title>
   <style>
-    body { font-family: 'Arial'; padding: 20px; background: #f9f9f9; color: #333; text-align: center; }
-    input, button { padding: 10px; margin: 5px; border-radius: 5px; border: 1px solid #ccc; }
-    .material { margin-bottom: 10px; }
-    #result, #finalGPA { font-size: 1.2em; margin-top: 20px; }
-    footer { margin-top: 40px; font-size: 0.9em; color: #777; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background-color: #111;
+      color: white;
+      text-align: center;
+      padding: 50px;
+      direction: rtl;
+    }
+    h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+    #countdown {
+      font-size: 2em;
+      margin-top: 20px;
+    }
+    .whatsapp-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: #25D366;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-size: 16px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      transition: background-color 0.3s;
+    }
+    .whatsapp-btn:hover {
+      background-color: #1ebe5b;
+    }
   </style>
 </head>
 <body>
+  <h1>🚧 الموقع تحت الصيانة 🚧</h1>
+  <p>سنعود خلال:</p>
+  <div id="countdown">جارٍ التحميل...</div>
 
-  <h2>حساب المعدل الفصلي</h2>
-  <div id="materials"></div>
-  <button onclick="addMaterial()">➕ إضافة مادة</button>
-  <button onclick="calculateGPA()">📊 احسب المعدل</button>
-  <div id="result"></div>
-
-  <hr>
-
-  <h2>حساب المعدل التراكمي</h2>
-  <input id="gpa1" type="number" placeholder="GPA الترم الأول" step="0.01" min="0" max="4">
-  <input id="hours1" type="number" placeholder="عدد الساعات الترم الأول" min="1">
-  <br>
-  <input id="gpa2" type="number" placeholder="GPA الترم الثاني" step="0.01" min="0" max="4">
-  <input id="hours2" type="number" placeholder="عدد الساعات الترم الثاني" min="1">
-  <br>
-  <button onclick="calculateFinalGPA()">📚 احسب التراكمي</button>
-  <div id="finalGPA"></div>
-
-  <footer>
-    ⚡ تم الإنشاء بواسطة د. Mohamed Fathy - 01091964996  
-    <br><br>
-    👁️ <span id="visits">تحميل عدد الزيارات...</span>
-    <script>
-      fetch('https://api.countapi.xyz/hit/gpa-dmo/visits')
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById("visits").innerText = "عدد الزوار: " + data.value;
-        });
-    </script>
-  </footer>
+  <!-- زر الواتساب -->
+  <a class="whatsapp-btn" href="https://wa.me/201091964996" target="_blank">راسلنا عبر واتساب</a>
 
   <script>
-    function addMaterial() {
-      const container = document.getElementById("materials");
-      const div = document.createElement("div");
-      div.className = "material";
-      div.innerHTML = `
-        <input type="number" placeholder="عدد الساعات" min="1">
-        <input type="number" placeholder="الدرجة" min="0" max="100">
-      `;
-      container.appendChild(div);
+    // وقت بداية الصيانة بتوقيت مصر
+    const startTime = new Date("2025-06-28T12:00:00+02:00");
+    const endTime = new Date(startTime.getTime() + 24 * 60 * 60 * 1000); // 24 ساعة
+
+    // الإشعارات
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
     }
 
-    function calculateGPA() {
-      const materials = document.querySelectorAll(".material");
-      let totalHours = 0, totalPoints = 0;
-      materials.forEach(m => {
-        const hours = parseFloat(m.children[0].value);
-        const grade = parseFloat(m.children[1].value);
-        if (!isNaN(hours) && !isNaN(grade)) {
-          let point = 0;
-          if (grade >= 90) point = 4;
-          else if (grade >= 85) point = 3.7;
-          else if (grade >= 80) point = 3.3;
-          else if (grade >= 75) point = 3;
-          else if (grade >= 70) point = 2.7;
-          else if (grade >= 65) point = 2.4;
-          else if (grade >= 60) point = 2;
-          totalHours += hours;
-          totalPoints += point * hours;
+    let notified = false;
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = endTime - now;
+
+      if (diff <= 0) {
+        document.getElementById("countdown").innerHTML = "✅ انتهت الصيانة ✅";
+        if ("Notification" in window && Notification.permission === "granted" && !notified) {
+          new Notification("✨ الموقع جاهز الآن! ✨");
+          notified = true;
         }
-      });
-      const result = (totalPoints / totalHours).toFixed(2);
-      document.getElementById("result").innerText = isNaN(result) ? "" : "📘 المعدل الفصلي: " + result;
+        return;
+      }
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").innerHTML =
+        `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
     }
 
-    function calculateFinalGPA() {
-      const gpa1 = parseFloat(document.getElementById("gpa1").value);
-      const hours1 = parseFloat(document.getElementById("hours1").value);
-      const gpa2 = parseFloat(document.getElementById("gpa2").value);
-      const hours2 = parseFloat(document.getElementById("hours2").value);
-      if (!isNaN(gpa1) && !isNaN(hours1) && !isNaN(gpa2) && !isNaN(hours2)) {
-        const totalGPA = ((gpa1 * hours1) + (gpa2 * hours2)) / (hours1 + hours2);
-        document.getElementById("finalGPA").innerText = "📘 المعدل التراكمي: " + totalGPA.toFixed(2);
-      } else {
-        document.getElementById("finalGPA").innerText = "";
-      }
-    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
   </script>
 </body>
 </html>
