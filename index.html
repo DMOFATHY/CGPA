@@ -1,87 +1,163 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>الموقع تحت الصيانة</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حساب GPA</title>
   <style>
     body {
-      font-family: 'Cairo', sans-serif;
-      background-color: #111;
-      color: white;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f0f0;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: #f0f0f0;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .dark-mode .container {
+      background-color: #1e1e1e;
+    }
+    h2 {
       text-align: center;
-      padding: 50px;
-      direction: rtl;
     }
-    h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
-    #countdown {
-      font-size: 2em;
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .toggle-dark {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .course-list {
       margin-top: 20px;
     }
-    .whatsapp-btn {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background-color: #25D366;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 50px;
-      font-size: 16px;
-      text-decoration: none;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      z-index: 999;
-      transition: background-color 0.3s;
+    .course-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
     }
-    .whatsapp-btn:hover {
-      background-color: #1ebe5b;
+    .course-item input {
+      flex: 1;
     }
   </style>
 </head>
 <body>
-  <h1>🚧 الموقع تحت الصيانة 🚧</h1>
-  <p>سنعود خلال:</p>
-  <div id="countdown">جارٍ التحميل...</div>
+  <div class="container">
+    <h2>حاسبة GPA من 4</h2>
 
-  <!-- زر الواتساب -->
-  <a class="whatsapp-btn" href="https://wa.me/201091964996" target="_blank">راسلنا عبر واتساب</a>
+    <div id="courseContainer" class="course-list">
+      <div class="course-item">
+        <input type="text" placeholder="اسم المادة" class="subject">
+        <input type="number" step="0.01" placeholder="الدرجة من 4" class="grade">
+        <input type="number" step="0.01" placeholder="عدد الساعات" class="hours">
+      </div>
+    </div>
+
+    <button onclick="addCourse()">إضافة مادة أخرى</button>
+    <button onclick="calculateGPA()">احسب GPA</button>
+    <p id="termGPA"></p>
+
+    <hr>
+
+    <h4>GPA التراكمي (ترمين)</h4>
+    <input type="number" id="gpa1" placeholder="GPA الترم الأول" step="0.01">
+    <input type="number" id="hours1" placeholder="عدد ساعات الترم الأول" step="0.01">
+    <input type="number" id="gpa2" placeholder="GPA الترم الثاني" step="0.01">
+    <input type="number" id="hours2" placeholder="عدد ساعات الترم الثاني" step="0.01">
+    <button onclick="calcCumulativeGPA()">احسب التراكمي</button>
+    <p id="cumulativeGPA"></p>
+
+    <div class="toggle-dark">
+      <button id="darkModeBtn" onclick="toggleDarkMode()">تفعيل الوضع الليلي</button>
+    </div>
+  </div>
 
   <script>
-    // وقت بداية الصيانة بتوقيت مصر
-    const startTime = new Date("2025-06-28T12:00:00+02:00");
-    const endTime = new Date(startTime.getTime() + 24 * 60 * 60 * 1000); // 24 ساعة
-
-    // الإشعارات
-    if ("Notification" in window && Notification.permission !== "granted") {
-      Notification.requestPermission();
+    function addCourse() {
+      const container = document.getElementById('courseContainer');
+      const div = document.createElement('div');
+      div.className = 'course-item';
+      div.innerHTML = `
+        <input type="text" placeholder="اسم المادة" class="subject">
+        <input type="number" step="0.01" placeholder="الدرجة من 4" class="grade">
+        <input type="number" step="0.01" placeholder="عدد الساعات" class="hours">
+      `;
+      container.appendChild(div);
     }
 
-    let notified = false;
+    function calculateGPA() {
+      const grades = document.querySelectorAll('.grade');
+      const hours = document.querySelectorAll('.hours');
 
-    function updateCountdown() {
-      const now = new Date();
-      const diff = endTime - now;
+      let totalPoints = 0;
+      let totalHours = 0;
 
-      if (diff <= 0) {
-        document.getElementById("countdown").innerHTML = "✅ انتهت الصيانة ✅";
-        if ("Notification" in window && Notification.permission === "granted" && !notified) {
-          new Notification("✨ الموقع جاهز الآن! ✨");
-          notified = true;
+      for (let i = 0; i < grades.length; i++) {
+        const grade = parseFloat(grades[i].value);
+        const hour = parseFloat(hours[i].value);
+
+        if (!isNaN(grade) && !isNaN(hour)) {
+          totalPoints += grade * hour;
+          totalHours += hour;
         }
-        return;
       }
 
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      document.getElementById("countdown").innerHTML =
-        `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${seconds.toString().padStart(2, '0')}`;
+      if (totalHours > 0) {
+        const gpa = totalPoints / totalHours;
+        document.getElementById('termGPA').innerText = 'GPA الترم = ' + gpa.toFixed(2);
+      } else {
+        document.getElementById('termGPA').innerText = 'من فضلك أدخل الدرجات والساعات بشكل صحيح';
+      }
     }
 
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
+    function calcCumulativeGPA() {
+      let gpa1 = parseFloat(document.getElementById('gpa1').value);
+      let hours1 = parseFloat(document.getElementById('hours1').value);
+      let gpa2 = parseFloat(document.getElementById('gpa2').value);
+      let hours2 = parseFloat(document.getElementById('hours2').value);
+
+      if (!isNaN(gpa1) && !isNaN(hours1) && !isNaN(gpa2) && !isNaN(hours2)) {
+        let totalPoints = (gpa1 * hours1) + (gpa2 * hours2);
+        let totalHours = hours1 + hours2;
+        let cumulative = totalPoints / totalHours;
+        document.getElementById('cumulativeGPA').innerText = 'GPA التراكمي = ' + cumulative.toFixed(2);
+      } else {
+        document.getElementById('cumulativeGPA').innerText = 'يرجى إدخال جميع القيم بشكل صحيح';
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      const btn = document.getElementById('darkModeBtn');
+      btn.innerText = document.body.classList.contains('dark-mode') ? 'إلغاء الوضع الليلي' : 'تفعيل الوضع الليلي';
+    }
   </script>
 </body>
 </html>
