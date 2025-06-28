@@ -1,155 +1,96 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>GPA Calculator - Dr. Mohamed Fathy</title>
+  <title>حساب المعدل التراكمي - GPA</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; direction: rtl; padding: 30px; background: #f9f9f9; }
-    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; background: #fff; }
-    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-    input { width: 100%; padding: 8px; font-size: 14px; text-align: center; }
-    button { padding: 10px 20px; font-weight: bold; margin-top: 10px; background-color: #4CAF50; border: none; color: white; border-radius: 6px; cursor: pointer; }
-    .section { background: #fff; padding: 20px; border-radius: 10px; margin-top: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .result { margin-top: 15px; font-size: 1.1em; color: #1e6f36; font-weight: bold; }
-    .footer { margin-top: 40px; font-size: 0.9em; color: #555; text-align: center; border-top: 1px solid #ccc; padding-top: 10px; }
-    .visitor-counter {
-      background: #2c3e50;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 15px;
-      font-weight: bold;
-      display: inline-block;
-      margin-right: 5px;
-    }
+    body { font-family: 'Arial'; padding: 20px; background: #f9f9f9; color: #333; text-align: center; }
+    input, button { padding: 10px; margin: 5px; border-radius: 5px; border: 1px solid #ccc; }
+    .material { margin-bottom: 10px; }
+    #result, #finalGPA { font-size: 1.2em; margin-top: 20px; }
+    footer { margin-top: 40px; font-size: 0.9em; color: #777; }
   </style>
 </head>
 <body>
 
-  <h2>📚 حساب GPA الترم الثاني</h2>
+  <h2>حساب المعدل الفصلي</h2>
+  <div id="materials"></div>
+  <button onclick="addMaterial()">➕ إضافة مادة</button>
+  <button onclick="calculateGPA()">📊 احسب المعدل</button>
+  <div id="result"></div>
 
-  <table id="table">
-    <tr>
-      <th>المادة</th>
-      <th>الدرجة (من 4)</th>
-      <th>عدد الساعات</th>
-    </tr>
-    <tr>
-      <td><input type="text" placeholder="مثال: تشريح"></td>
-      <td><input type="number" class="grade" step="0.01" min="0" max="4"></td>
-      <td><input type="number" class="hours" step="0.5" min="0"></td>
-    </tr>
-  </table>
+  <hr>
 
-  <button onclick="addRow()">➕ أضف مادة</button>
-  <button onclick="calculateTermGPA()">📊 احسب GPA الترم الثاني</button>
+  <h2>حساب المعدل التراكمي</h2>
+  <input id="gpa1" type="number" placeholder="GPA الترم الأول" step="0.01" min="0" max="4">
+  <input id="hours1" type="number" placeholder="عدد الساعات الترم الأول" min="1">
+  <br>
+  <input id="gpa2" type="number" placeholder="GPA الترم الثاني" step="0.01" min="0" max="4">
+  <input id="hours2" type="number" placeholder="عدد الساعات الترم الثاني" min="1">
+  <br>
+  <button onclick="calculateFinalGPA()">📚 احسب التراكمي</button>
+  <div id="finalGPA"></div>
 
-  <div class="result" id="termGPAResult"></div>
-
-  <div class="section">
-    <h3>📈 حساب المعدل التراكمي</h3>
-
-    <label>GPA الترم الأول:</label>
-    <input type="number" id="gpa1" placeholder="مثال: 3.2" step="0.01" min="0" max="4">
-
-    <label>عدد الساعات الترم الأول:</label>
-    <input type="number" id="hours1" placeholder="مثال: 15" step="0.5" min="0">
-
-    <label>GPA الترم الثاني (يظهر تلقائي):</label>
-    <input type="number" id="gpa2" placeholder="مثال: 3.5" step="0.01" min="0" max="4" readonly>
-
-    <label>عدد الساعات الترم الثاني:</label>
-    <input type="number" id="hours2" placeholder="مثال: 18" step="0.5" min="0">
-
-    <button onclick="calculateTotalGPA()">📌 احسب المعدل التراكمي النهائي</button>
-
-    <div class="result" id="finalResult"></div>
-  </div>
-
-  <div style="text-align:center; margin-top:20px;">
-    👁️ عدد الزوار: <span class="visitor-counter" id="visitorCounter">0</span>
-  </div>
-
-  <div class="footer">
-    Created by Dr. Mohamed Fathy – 📞 01091964996
-  </div>
+  <footer>
+    ⚡ تم الإنشاء بواسطة د. Mohamed Fathy - 01091964996  
+    <br><br>
+    👁️ <span id="visits">تحميل عدد الزيارات...</span>
+    <script>
+      fetch('https://api.countapi.xyz/hit/gpa-dmo/visits')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("visits").innerText = "عدد الزوار: " + data.value;
+        });
+    </script>
+  </footer>
 
   <script>
-    // عداد الزوار المحسن
-    document.addEventListener('DOMContentLoaded', function() {
-      let visitorCount = localStorage.getItem('visitorCount');
-      
-      if (!visitorCount) {
-        visitorCount = 0;
-      } else {
-        visitorCount = parseInt(visitorCount);
-      }
-      
-      visitorCount++;
-      localStorage.setItem('visitorCount', visitorCount);
-      
-      document.getElementById('visitorCounter').textContent = visitorCount;
-    });
-
-    function addRow() {
-      const table = document.getElementById("table");
-      const row = table.insertRow();
-      for (let i = 0; i < 3; i++) {
-        const cell = row.insertCell();
-        const input = document.createElement("input");
-        input.type = i === 0 ? "text" : "number";
-        input.step = i === 0 ? "" : "0.01";
-        input.className = i === 1 ? "grade" : i === 2 ? "hours" : "";
-        input.min = "0";
-        input.max = i === 1 ? "4" : "";
-        cell.appendChild(input);
-      }
+    function addMaterial() {
+      const container = document.getElementById("materials");
+      const div = document.createElement("div");
+      div.className = "material";
+      div.innerHTML = `
+        <input type="number" placeholder="عدد الساعات" min="1">
+        <input type="number" placeholder="الدرجة" min="0" max="100">
+      `;
+      container.appendChild(div);
     }
 
-    function calculateTermGPA() {
-      const grades = document.querySelectorAll(".grade");
-      const hours = document.querySelectorAll(".hours");
-
-      let totalPoints = 0;
-      let totalHours = 0;
-
-      for (let i = 0; i < grades.length; i++) {
-        const grade = parseFloat(grades[i].value);
-        const hour = parseFloat(hours[i].value);
-
-        if (!isNaN(grade) && !isNaN(hour)) {
-          totalPoints += grade * hour;
-          totalHours += hour;
+    function calculateGPA() {
+      const materials = document.querySelectorAll(".material");
+      let totalHours = 0, totalPoints = 0;
+      materials.forEach(m => {
+        const hours = parseFloat(m.children[0].value);
+        const grade = parseFloat(m.children[1].value);
+        if (!isNaN(hours) && !isNaN(grade)) {
+          let point = 0;
+          if (grade >= 90) point = 4;
+          else if (grade >= 85) point = 3.7;
+          else if (grade >= 80) point = 3.3;
+          else if (grade >= 75) point = 3;
+          else if (grade >= 70) point = 2.7;
+          else if (grade >= 65) point = 2.4;
+          else if (grade >= 60) point = 2;
+          totalHours += hours;
+          totalPoints += point * hours;
         }
-      }
-
-      if (totalHours === 0) {
-        document.getElementById("termGPAResult").innerText = "❌ أدخل بيانات صحيحة لحساب GPA الترم.";
-        return;
-      }
-
-      const termGPA = totalPoints / totalHours;
-      document.getElementById("termGPAResult").innerText = `✅ GPA الترم الثاني: ${termGPA.toFixed(2)}`;
-      document.getElementById("gpa2").value = termGPA.toFixed(2);
+      });
+      const result = (totalPoints / totalHours).toFixed(2);
+      document.getElementById("result").innerText = isNaN(result) ? "" : "📘 المعدل الفصلي: " + result;
     }
 
-    function calculateTotalGPA() {
-      const gpa1 = parseFloat(document.getElementById("gpa1").value) || 0;
-      const hours1 = parseFloat(document.getElementById("hours1").value) || 0;
-      const gpa2 = parseFloat(document.getElementById("gpa2").value) || 0;
-      const hours2 = parseFloat(document.getElementById("hours2").value) || 0;
-
-      if ((hours1 + hours2) === 0) {
-        document.getElementById("finalResult").innerText = "❌ أدخل البيانات بشكل صحيح.";
-        return;
+    function calculateFinalGPA() {
+      const gpa1 = parseFloat(document.getElementById("gpa1").value);
+      const hours1 = parseFloat(document.getElementById("hours1").value);
+      const gpa2 = parseFloat(document.getElementById("gpa2").value);
+      const hours2 = parseFloat(document.getElementById("hours2").value);
+      if (!isNaN(gpa1) && !isNaN(hours1) && !isNaN(gpa2) && !isNaN(hours2)) {
+        const totalGPA = ((gpa1 * hours1) + (gpa2 * hours2)) / (hours1 + hours2);
+        document.getElementById("finalGPA").innerText = "📘 المعدل التراكمي: " + totalGPA.toFixed(2);
+      } else {
+        document.getElementById("finalGPA").innerText = "";
       }
-
-      const totalPoints = (gpa1 * hours1) + (gpa2 * hours2);
-      const totalHours = hours1 + hours2;
-      const totalGPA = totalPoints / totalHours;
-
-      document.getElementById("finalResult").innerText = `📍 المعدل التراكمي النهائي: ${totalGPA.toFixed(2)}`;
     }
   </script>
-
 </body>
 </html>
